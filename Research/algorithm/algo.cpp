@@ -1,8 +1,7 @@
-#include "graphs.h"
+#include "algo.h";
 
-int main() {
-    return 0;
-}
+
+// ***************** Build Graphs Logic *****************
 
 void build_graphs() {
     vector<char> vertices;
@@ -24,9 +23,11 @@ void build_graphs() {
     unsigned_int l1 = arr_len / 2;
     vector<char> v1 = getSubVerts(vertices, 0, l1);
     Graph graph2a = getClique(&v1, l1);
+    graph2a.vertices = v1;
     unsigned_int l2 = arr_len - l1;
     vector<char> v2 = getSubVerts(vertices, l1, arr_len);
     Graph graph2b = getClique(&v2, l2);
+    graph2b.vertices = v2;
 
     graph2.vertices = vertices;
     graph2.numEdges = 0;
@@ -43,7 +44,7 @@ void build_graphs() {
     for (unsigned_int i = 0; i < graph2b.size; i++) {
         vector<char> adj_edgs;
         for (unsigned_int j = i + 1; j < graph2b.size; j++) {
-            adj_edgs.push_back(graph2a.vertices.at(j));
+            adj_edgs.push_back(graph2b.vertices.at(j));
             graph2.numEdges++;
         }
         graph2.edges.insert(make_pair(graph2b.vertices.at(i), adj_edgs));
@@ -132,4 +133,60 @@ unsigned_int* factorial(unsigned_int num) {
         num --;
     }
     return result;
+}
+
+// ***************** Algorithm Logic *****************
+
+void clique_search() {
+    Graph graph = getGraph1();
+    build_edge_map(&graph);
+    map <char, char > maxEdges;
+    unsigned_int numTrue = 0;
+    unsigned_int numFalse = 0;
+    for (int i = 0; i < graph.size; i++) {
+        for (int j = i + 1; j < graph.size; j++) {
+            vector <char> e;
+            e.push_back(graph.vertices.at(i));
+            e.push_back(graph.vertices.at(j));
+            auto f = edges.find(e);
+            unsigned_int second = f -> second;
+            if (edges.at((f->first)) != 0) {
+                cout << true << endl;
+                numTrue++;
+            } else {
+                cout << false << endl;
+                numFalse ++;
+            }
+            e.clear();
+
+        }
+    }
+    cout << numTrue << endl;
+    cout << numFalse << endl;
+}
+
+void build_edge_map(Graph *graph) {
+    for (int i = 0; i < graph->vertices.size(); i++) {
+        char c = graph->vertices.at(i);
+        unsigned_int k = 0;
+        for (int j = i + 1; j < graph->vertices.size(); j++) {
+            vector <char> edg;
+            edg.push_back(c);
+            edg.push_back(graph->vertices.at(j));
+            if (graph->edges.at(c).size() == 0 || k >= graph->edges.at(c).size() || graph->edges.at(c).at(k) != graph->vertices.at(j)) {
+                edges.insert(make_pair(edg, 0));
+            } else {
+                edges.insert(make_pair(edg, 1));
+                k++;
+            }
+        }
+    }
+    map <vector <char>, unsigned_int> test = edges;
+    cout << test.size();
+}
+
+int main() {
+    build_graphs();
+    clique_search();
+    return 0;
 }
