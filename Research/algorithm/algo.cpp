@@ -5,14 +5,20 @@
 
 void build_graphs() {
     vector<char> vertices;
-    vertices.push_back('a');
-    vertices.push_back('b');
-    vertices.push_back('c');
-    vertices.push_back('d');
-    vertices.push_back('e');
-    vertices.push_back('f');
-    vertices.push_back('g');
-    vertices.push_back('h');
+    for (int i = 0; i < graph_size; i++) {
+        vertices.push_back(char(97+i));
+        cout << char(97+i) << endl;
+    }
+    cout << vertices.at(0);
+    // vertices.push_back('a');
+    // vertices.push_back('b');
+    // vertices.push_back('c');
+    // vertices.push_back('d');
+    // vertices.push_back('e');
+    // vertices.push_back('f');
+    // vertices.push_back('g');
+    // vertices.push_back('h');
+    // vertices.push_back('i');
 
     int arr_len = vertices.size();
 
@@ -138,7 +144,7 @@ unsigned_int* factorial(unsigned_int num) {
 // ***************** Algorithm Logic *****************
 
 void clique_search() {
-    Graph graph = getGraph1();
+    Graph graph = getGraph2();
     build_edge_map(&graph);
     map <char, char > maxEdges;
     unsigned_int numTrue = 0;

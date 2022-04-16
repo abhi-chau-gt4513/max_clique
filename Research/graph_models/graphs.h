@@ -7,7 +7,7 @@ using namespace std;
 
 typedef uint16_t unsigned_int;
 
-const unsigned_int size = 8;
+const unsigned_int graph_size = 10;
 
 typedef struct Structure {
     vector<char> vertices;
