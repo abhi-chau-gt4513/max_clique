@@ -5,20 +5,9 @@
 
 void build_graphs() {
     vector<char> vertices;
-    for (int i = 0; i < graph_size; i++) {
+    for (unsigned_int i = 0; i < graph_size; i++) {
         vertices.push_back(char(97+i));
-        cout << char(97+i) << endl;
     }
-    cout << vertices.at(0);
-    // vertices.push_back('a');
-    // vertices.push_back('b');
-    // vertices.push_back('c');
-    // vertices.push_back('d');
-    // vertices.push_back('e');
-    // vertices.push_back('f');
-    // vertices.push_back('g');
-    // vertices.push_back('h');
-    // vertices.push_back('i');
 
     int arr_len = vertices.size();
 
@@ -84,9 +73,7 @@ void build_graphs() {
 vector<char> getSubVerts(vector<char> verts, unsigned_int start, unsigned_int end) {
     if (start < 0 || end > verts.size()) return verts;
     auto first = verts.begin() + start;
-    cout << *first << endl;
     auto last = verts.begin() + end;
-    cout << *(last - 1) << endl;
     vector<char> v(first, last);
     return v;
 
@@ -100,7 +87,7 @@ Graph getClique(vector<char> *verts, unsigned_int size) {
     unsigned_int val1 = * factorial(size);
     unsigned_int val2 = * factorial(2);
     unsigned_int val3 = * factorial(size - 2);
-    clique.numEdges = (unsigned_int) (val1 / val2 / val3);
+    clique.numEdges = (unsigned_int) (size * (size - 1) / 2);
 
     for (unsigned_int i = 0; i < size; i++) {
         clique.vertices.push_back((* verts).at(i));
@@ -144,38 +131,103 @@ unsigned_int* factorial(unsigned_int num) {
 // ***************** Algorithm Logic *****************
 
 void clique_search() {
-    Graph graph = getGraph2();
+    Graph graph = getGraph1();
     build_edge_map(&graph);
-    map <char, char > maxEdges;
-    unsigned_int numTrue = 0;
-    unsigned_int numFalse = 0;
-    for (int i = 0; i < graph.size; i++) {
-        for (int j = i + 1; j < graph.size; j++) {
+    
+    numEdges = graph.numEdges;
+    numVerts = graph.size;
+
+    // Check whether each pair of vertices is an edge that exists or not.
+    for (unsigned_int i = 0; i < graph.size; i++) {
+        for (unsigned_int j = i + 1; j < graph.size; j++) {
+            vector <char> e;
+            e.push_back(graph.vertices.at(i));
+            e.push_back(graph.vertices.at(j));
+            vector <char> v;
+            auto f = edges.find(e);
+            unsigned_int second = edges.at((f->first));
+            if (second != 0) {
+                v.push_back(graph.vertices.at(i));
+                maxVerts.insert(make_pair(e, v));
+            } else {
+                maxVerts.insert(make_pair(e, v));
+            }
+            e.clear();
+        }
+    }
+
+    for (unsigned_int i = 0; i < graph.size; i++) {
+        for (unsigned_int j = i + 1; j < graph.size; j++) {
             vector <char> e;
             e.push_back(graph.vertices.at(i));
             e.push_back(graph.vertices.at(j));
             auto f = edges.find(e);
-            unsigned_int second = f -> second;
+            vector <char> v;
             if (edges.at((f->first)) != 0) {
-                cout << true << endl;
-                numTrue++;
+                unsigned_int k = i;
+
+                unsigned_int max = 0;
+                
+                vector <char> u;
+                u.push_back(graph.vertices.at(i));
+                while (k % 65536 < graph.size) {
+
+                    // Get 1st vertex from kth row at/before current row
+                    vector <char> temp1;
+                    temp1.push_back(graph.vertices.at(k));
+                    temp1.push_back(graph.vertices.at(i));
+                    auto f1 = edges.find(temp1);
+
+                    // Get 2nd vertex from kth row at/before current row
+                    vector <char> temp2;
+                    temp2.push_back(graph.vertices.at(k));
+                    temp2.push_back(graph.vertices.at(j));
+                    auto f2 = edges.find(temp2);
+
+                    unsigned_int val1 = graph.vertices.at(k) == graph.vertices.at(i) ? 0 : edges.at((f1->first));
+                    unsigned_int val2 = graph.vertices.at(k) == graph.vertices.at(j) ? 0 : edges.at((f2->first));
+                    if (val1 > 0 && val2 > 0) {
+                        u.push_back(graph.vertices.at(k));
+                    }
+
+                    counter += 1;
+                    
+                    k--;
+                }
+                // v.push_back(graph.vertices.at(i));
+                maxVerts.at(e) = u;
+                
             } else {
-                cout << false << endl;
-                numFalse ++;
+                maxVerts.insert(make_pair(e, v));
             }
             e.clear();
-
         }
     }
-    cout << numTrue << endl;
-    cout << numFalse << endl;
+
+
+}
+
+vector <char> getMaxClique() {
+    unsigned_int max = 0;
+    vector <char> clique;
+    auto iter = maxVerts.begin();              // Sources: https://stackoverflow.com/questions/26281979/c-loop-through-map, https://www.delftstack.com/howto/cpp/how-to-iterate-over-map-in-cpp/ 
+    while (iter != maxVerts.end()) {
+        if (iter->second.size() + 1 > max) {
+            clique.clear();
+            max = iter->second.size();
+            clique = iter->second;
+            clique.push_back(iter->first.at(1));
+        }
+        iter++;
+    }
+    return clique;
 }
 
 void build_edge_map(Graph *graph) {
-    for (int i = 0; i < graph->vertices.size(); i++) {
+    for (unsigned_int i = 0; i < graph->vertices.size(); i++) {
         char c = graph->vertices.at(i);
         unsigned_int k = 0;
-        for (int j = i + 1; j < graph->vertices.size(); j++) {
+        for (unsigned_int j = i + 1; j < graph->vertices.size(); j++) {
             vector <char> edg;
             edg.push_back(c);
             edg.push_back(graph->vertices.at(j));
@@ -188,11 +240,18 @@ void build_edge_map(Graph *graph) {
         }
     }
     map <vector <char>, unsigned_int> test = edges;
-    cout << test.size();
 }
 
 int main() {
     build_graphs();
     clique_search();
+    vector <char> maxClique = getMaxClique();
+    for (int i = 0; i < maxClique.size(); i++) {
+        cout << maxClique.at(i) << " ";
+    }
+    cout << endl;
+    cout << "Graph size: " << numVerts << endl;
+    cout << "Number of edges: " << numEdges << endl;
+    cout << "Clock: " << counter << endl;
     return 0;
 }
