@@ -159,7 +159,7 @@ unsigned_int* factorial(unsigned_int num) {
 // ***************** Algorithm Logic *****************
 
 void clique_search() {
-    Graph graph = getGraph2();
+    Graph graph = getGraph4();
     build_edge_map(&graph);
     
     numEdges = graph.numEdges;
@@ -222,7 +222,7 @@ void clique_search() {
 
                     for (unsigned_int x = 0; x < max_common_edges.at(f1->first).size(); x++) {
                         for (unsigned_int y = 0; y < max_common_edges.at(f2->first).size(); y++) {
-
+                            counter += 1;
                             if (max_common_edges.at(f1->first).at(x) == max_common_edges.at(f2->first).at(y)) {
                                 common.push_back(max_common_edges.at(f1->first).at(x));
                             } 
@@ -236,13 +236,6 @@ void clique_search() {
                         
                     }
                     common.clear();
-
-                    // unsigned_int val1 = graph.vertices.at(k) == graph.vertices.at(i) ? 0 : edges.at((f1->first));
-                    // unsigned_int val2 = graph.vertices.at(k) == graph.vertices.at(j) ? 0 : edges.at((f2->first));
-                    // if (val1 > 0 && val2 > 0) {
-                    //     u.push_back(graph.vertices.at(k));
-                    // }
-                    counter += 1;
                     
                     k--;
                 }
@@ -251,6 +244,7 @@ void clique_search() {
                 
             } else {
                 maxVerts.insert(make_pair(e, v));
+                counter += 1;
             }
             e.clear();
         }
