@@ -20,4 +20,3 @@ void clique_search();
 vector <char> getMaxClique();
 
 void build_edge_map(Graph *graph);
-

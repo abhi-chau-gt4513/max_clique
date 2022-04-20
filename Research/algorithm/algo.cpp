@@ -11,9 +11,11 @@ void build_graphs() {
 
     int arr_len = vertices.size();
 
+    // ***** Case 1: Clique of size |V| (full Clique) *****
 
     graph1 = getClique(&vertices, arr_len);
 
+    // ***** Case 2: Cliques of size < |V| *****
 
     unsigned_int l1 = arr_len / 2;
     vector<char> v1 = getSubVerts(vertices, 0, l1);
@@ -46,6 +48,8 @@ void build_graphs() {
     }
     graph2.size = vertices.size();
     
+    // ***** Case 3: Disconnected Graph *****
+    
     graph3.vertices = vertices;
     graph3.size = vertices.size();
     for (unsigned_int i = 0; i < graph3.size; i++) {
@@ -54,6 +58,26 @@ void build_graphs() {
     }
     graph3.numEdges = 0;
 
+    // ***** Case 4: Just a Random Graph *****
+
+    vector<char> vertices2;
+    for (unsigned_int i = 0; i < 13; i++) {
+        vertices2.push_back(char(97+i));
+    }
+
+    graph4.vertices = vertices2;
+    graph4.size = vertices2.size();
+    for (unsigned_int i = 0; i < graph4.size; i += 1) {
+        vector<char> adj_edgs;
+        for (unsigned_int j = i + 1 * (i + 1); j < graph4.size; j+= i + 1) {
+            adj_edgs.push_back(graph4.vertices.at(j));
+            graph4.numEdges++;
+        }
+        graph4.edges.insert(make_pair(graph4.vertices.at(i), adj_edgs));
+    }
+
+    auto testing = graph4.edges;
+    
 }
 
 /**
@@ -114,6 +138,10 @@ Graph getGraph3(void) {
     return graph3;
 }
 
+Graph getGraph4(void) {
+    return graph4;
+}
+
 unsigned_int getArrLength(unsigned_int arr_size, unsigned_int data_size) {
     return arr_size / data_size;
 }
@@ -131,7 +159,7 @@ unsigned_int* factorial(unsigned_int num) {
 // ***************** Algorithm Logic *****************
 
 void clique_search() {
-    Graph graph = getGraph1();
+    Graph graph = getGraph2();
     build_edge_map(&graph);
     
     numEdges = graph.numEdges;
@@ -163,33 +191,57 @@ void clique_search() {
             e.push_back(graph.vertices.at(j));
             auto f = edges.find(e);
             vector <char> v;
+            vector <char> common_edges;
+            max_common_edges.insert(make_pair(e, common_edges));
             if (edges.at((f->first)) != 0) {
-                unsigned_int k = i;
+                max_common_edges.at(e).push_back(graph.vertices.at(i));
+
+                unsigned_int k = i - 1;
 
                 unsigned_int max = 0;
                 
                 vector <char> u;
-                u.push_back(graph.vertices.at(i));
+                // u.push_back(graph.vertices.at(i));
                 while (k % 65536 < graph.size) {
+                    vector <char> common;
+                    common.push_back(graph.vertices.at(i));
 
                     // Get 1st vertex from kth row at/before current row
                     vector <char> temp1;
                     temp1.push_back(graph.vertices.at(k));
                     temp1.push_back(graph.vertices.at(i));
-                    auto f1 = edges.find(temp1);
+                    auto f1 = max_common_edges.find(temp1);
 
                     // Get 2nd vertex from kth row at/before current row
                     vector <char> temp2;
                     temp2.push_back(graph.vertices.at(k));
                     temp2.push_back(graph.vertices.at(j));
-                    auto f2 = edges.find(temp2);
+                    auto f2 = max_common_edges.find(temp2);
 
-                    unsigned_int val1 = graph.vertices.at(k) == graph.vertices.at(i) ? 0 : edges.at((f1->first));
-                    unsigned_int val2 = graph.vertices.at(k) == graph.vertices.at(j) ? 0 : edges.at((f2->first));
-                    if (val1 > 0 && val2 > 0) {
-                        u.push_back(graph.vertices.at(k));
+                    int sz1 = max_common_edges.at(f1->first).size();
+
+                    for (unsigned_int x = 0; x < max_common_edges.at(f1->first).size(); x++) {
+                        for (unsigned_int y = 0; y < max_common_edges.at(f2->first).size(); y++) {
+
+                            if (max_common_edges.at(f1->first).at(x) == max_common_edges.at(f2->first).at(y)) {
+                                common.push_back(max_common_edges.at(f1->first).at(x));
+                            } 
+                        }
+                        
                     }
 
+                    if (common.size() > max) {
+                        max_common_edges.at(e) = common;
+                        max = common.size();
+                        
+                    }
+                    common.clear();
+
+                    // unsigned_int val1 = graph.vertices.at(k) == graph.vertices.at(i) ? 0 : edges.at((f1->first));
+                    // unsigned_int val2 = graph.vertices.at(k) == graph.vertices.at(j) ? 0 : edges.at((f2->first));
+                    // if (val1 > 0 && val2 > 0) {
+                    //     u.push_back(graph.vertices.at(k));
+                    // }
                     counter += 1;
                     
                     k--;
@@ -204,14 +256,16 @@ void clique_search() {
         }
     }
 
+    auto testing1 = max_common_edges;
+    cout << 1;
 
 }
 
 vector <char> getMaxClique() {
     unsigned_int max = 0;
     vector <char> clique;
-    auto iter = maxVerts.begin();              // Sources: https://stackoverflow.com/questions/26281979/c-loop-through-map, https://www.delftstack.com/howto/cpp/how-to-iterate-over-map-in-cpp/ 
-    while (iter != maxVerts.end()) {
+    auto iter = max_common_edges.begin();              // Sources: https://stackoverflow.com/questions/26281979/c-loop-through-map, https://www.delftstack.com/howto/cpp/how-to-iterate-over-map-in-cpp/ 
+    while (iter != max_common_edges.end()) {
         if (iter->second.size() + 1 > max) {
             clique.clear();
             max = iter->second.size();
