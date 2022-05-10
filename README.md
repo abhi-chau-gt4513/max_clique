@@ -1,4 +1,4 @@
-# Clique Search
+# Max Clique
 
 ## Background
 
