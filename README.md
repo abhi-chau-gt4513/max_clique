@@ -11,3 +11,8 @@ There are certain problems that are the hardest to solve, in which all other pro
 The Max-Clique problem, which is what this repo is about, happens to be one of these problems.
 
 This repo is there for the purposes of general exploration and research, and it gives a bit of perspective as to how one would think about finding ways to solve hard problems, as well as validating these solutions without extending beyond the use of resources such as memory and computational power.
+
+For more information, check out these sites:
+1) https://en.wikipedia.org/wiki/NP-completeness
+2) https://classroom.udacity.com/courses/ud401
+3) https://www.youtube.com/watch?v=0sQ37m3whP4
